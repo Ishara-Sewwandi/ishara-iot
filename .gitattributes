@@ -1,0 +1,4 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+dataset/fish_health/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+dataset/fish_health/**/*.png filter=lfs diff=lfs merge=lfs -text
