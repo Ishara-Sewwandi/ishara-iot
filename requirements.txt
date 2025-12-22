@@ -4,6 +4,8 @@ ultralytics>=8.0.0
 picamera2>=0.3.12
 requests>=2.31.0
 python-dotenv>=1.0.0
+flask>=3.0.0
+flask-cors>=4.0.0
 
 # Optional but recommended
 RPi.GPIO>=0.7.1
