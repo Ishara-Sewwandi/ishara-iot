@@ -198,7 +198,7 @@ python3 test_detector.py
 ## Troubleshooting
 
 ### "No images found"
-- Check `dataset/images/train/` has .jpg files
+- Check `dataset/images/train/` has .jpg filesfit to web
 - Check `dataset/labels/train/` has .txt files (same names)
 
 ### "Out of memory during training"
