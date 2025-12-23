@@ -174,8 +174,12 @@ class CameraHandler:
                 logger.debug("No frame available for streaming")
                 return None
             
+            # Convert BGR to RGB for web browser display
+            # (OpenCV uses BGR, but web browsers expect RGB in JPEG)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
             # Encode frame as JPEG
-            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+            ret, buffer = cv2.imencode('.jpg', frame_rgb, [cv2.IMWRITE_JPEG_QUALITY, 85])
             if ret:
                 return buffer.tobytes()
             else:
