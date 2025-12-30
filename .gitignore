@@ -59,3 +59,6 @@ data/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Fish health dataset images
+dataset/fish_health/
