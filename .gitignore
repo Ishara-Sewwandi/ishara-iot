@@ -8,8 +8,7 @@ __pycache__/
 
 # Virtual environment
 venv/
-env/
-ENV/
+
 
 # IDE
 .vscode/
@@ -18,47 +17,24 @@ ENV/
 *.swo
 
 # Environment variables
-.env
+
 
 # Logs
 *.log
 logs/
 
 # Alerts and images
-alerts/images/*.jpg
-alerts/images/*.png
 
-# Models
-models/*.pt
-!models/.gitkeep
+
+
 
 # Training outputs
-fish_detection/
-runs/
-weights/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.bak
 
 # Dataset (don't commit large datasets)
-datasets/
-data/
+
 *.zip
 *.tar.gz
 
-# Jupyter notebooks
-.ipynb_checkpoints/
-*.ipynb
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
 
-# Fish health dataset images
-dataset/fish_health/
