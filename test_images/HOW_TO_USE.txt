@@ -1,0 +1,95 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║     🐟 FISH HEALTH DETECTION - TEST YOUR OWN IMAGES 🐟          ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+✅ SETUP COMPLETE! You can now test your own fish images.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 FOLDER STRUCTURE CREATED:
+
+test_images/
+├── input/          👈 Upload your fish images here
+├── output/         👈 Results will appear here
+└── README.md       👈 Detailed instructions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 HOW TO USE:
+
+METHOD 1: Interactive Menu (Easiest)
+────────────────────────────────────
+  ./test_menu.sh
+
+
+METHOD 2: Quick Script
+──────────────────────
+  1. Upload images: cp your_fish.jpg test_images/input/
+  2. Run test:     python3 test_my_images.py
+  3. View results: ls test_images/output/
+
+
+METHOD 3: Shell Script
+──────────────────────
+  ./test_my_images.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📸 SUPPORTED IMAGE FORMATS:
+
+  ✓ JPG / JPEG
+  ✓ PNG
+  ✓ BMP
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 WHAT YOU'LL GET:
+
+  ✅ Automatic fish detection
+  ✅ Health status classification:
+     • Healthy (Green)
+     • Bacterial (Orange)
+     • Fungal (Purple)
+     • Parasitic (Blue)
+     • White Tail (Blue)
+     • Dead (Red)
+  ✅ Confidence scores
+  ✅ Annotated output images
+  ✅ Detailed results report
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION:
+
+  • TEST_YOUR_IMAGES.md    - Detailed guide with examples
+  • test_images/README.md  - Quick reference
+  • README.md              - Main project documentation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 QUICK EXAMPLE:
+
+  # Copy your image
+  cp ~/Pictures/my_fish.jpg test_images/input/
+  
+  # Run detection
+  python3 test_my_images.py
+  
+  # View result
+  ls -lh test_images/output/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 READY TO START!
+
+  Upload your fish images to: test_images/input/
+  
+  Then run: ./test_menu.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Need help? Check TEST_YOUR_IMAGES.md for detailed instructions!
+
+╚═══════════════════════════════════════════════════════════════════╝

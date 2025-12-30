@@ -164,6 +164,30 @@ python3 test_detector.py
 python3 test_alerts.py
 ```
 
+### Test Your Own Images
+
+Upload your fish images and test the detection system:
+
+```bash
+# 1. Add your images to the test folder
+cp your_fish_image.jpg test_images/input/
+
+# 2. Run the test script
+python3 test_my_images.py
+
+# Or use the shell script
+./test_my_images.sh
+
+# 3. Check results in test_images/output/
+```
+
+**Features:**
+- ✅ Upload any fish image (JPG, PNG, BMP)
+- ✅ Automatic fish detection
+- ✅ Health classification
+- ✅ Annotated output images
+- ✅ Detailed results report
+
 ## System Architecture
 
 ```

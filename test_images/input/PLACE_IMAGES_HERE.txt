@@ -1,0 +1,10 @@
+📁 UPLOAD YOUR FISH IMAGES HERE
+
+1. Delete this file
+2. Copy your fish images (JPG, PNG, BMP) to this folder
+3. Run: python3 test_my_images.py
+4. Check the output folder for results!
+
+Example:
+  cp my_fish_photo.jpg test_images/input/
+  python3 test_my_images.py
