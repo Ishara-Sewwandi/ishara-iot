@@ -74,7 +74,7 @@ class RainfallDetector:
             return False
         
         try:
-            # Convert to grayscale
+            # Convert to grayscale                                                         
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             
             # Build baseline if needed
