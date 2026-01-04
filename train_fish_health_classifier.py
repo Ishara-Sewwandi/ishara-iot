@@ -80,19 +80,45 @@ def train_fish_health_model(args):
             save=True,
             plots=True,
             verbose=True,
-            name='fish_health'
+            name='fish_health',
+            project='runs/classify'
         )
         
         elapsed = time.time() - start_time
         print(f"\n✅ Training completed in {elapsed/3600:.2f} hours!")
-        print(f"Best model saved: runs/classify/fish_health/weights/best.pt")
+        
+        # Get the actual save directory from results
+        save_dir = Path(results.save_dir) if hasattr(results, 'save_dir') else Path('runs/classify/fish_health')
+        best_model_path = save_dir / 'weights' / 'best.pt'
+        
+        print(f"Best model location: {best_model_path}")
         
         # Copy best model to models directory
         os.makedirs('models', exist_ok=True)
         import shutil
-        shutil.copy2('runs/classify/fish_health/weights/best.pt', 
-                     'models/fish_health_classifier.pt')
-        print("✅ Model copied to: models/fish_health_classifier.pt")
+        
+        if best_model_path.exists():
+            shutil.copy2(str(best_model_path), 'models/fish_health_classifier.pt')
+            print("✅ Model copied to: models/fish_health_classifier.pt")
+        else:
+            print(f"❌ Warning: Model file not found at {best_model_path}")
+            print(f"   Searching for model in common locations...")
+            
+            # Try alternative paths
+            possible_paths = [
+                Path('runs/classify/fish_health/weights/best.pt'),
+                Path.home() / 'runs/classify/fish_health/weights/best.pt',
+                Path('C:/Users') / os.getlogin() / 'runs/classify/fish_health/weights/best.pt'
+            ]
+            
+            for path in possible_paths:
+                if path.exists():
+                    print(f"   ✅ Found at: {path}")
+                    shutil.copy2(str(path), 'models/fish_health_classifier.pt')
+                    print("✅ Model copied to: models/fish_health_classifier.pt")
+                    break
+            else:
+                raise FileNotFoundError(f"Could not find best.pt in any expected location")
         
         # Test on test set
         if test_dir.exists():
