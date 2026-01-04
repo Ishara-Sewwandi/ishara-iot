@@ -72,6 +72,22 @@ def validate_dataset(data_yaml):
 def train_fish_model(args):
     """Train YOLOv8 model"""
     
+    # Set default values if not provided
+    if not hasattr(args, 'model'):
+        args.model = 'yolov8n.pt'
+    if not hasattr(args, 'device'):
+        args.device = 'cpu'
+    if not hasattr(args, 'project'):
+        args.project = 'runs/detect'
+    if not hasattr(args, 'name'):
+        args.name = 'train'
+    # Map img_size to imgsz for compatibility
+    if hasattr(args, 'img_size'):
+        args.imgsz = args.img_size
+    # Map batch_size to batch for compatibility
+    if hasattr(args, 'batch_size'):
+        args.batch = args.batch_size
+    
     print("\n" + "=" * 60)
     print("YOLOv8 Fish Detection Training")
     print("=" * 60)
@@ -204,12 +220,7 @@ names:
         """)
         return
     
-    train_model(
-        data_yaml=args.data,
-        epochs=args.epochs,
-        img_size=args.img_size,
-        batch_size=args.batch_size
-    )
+    train_fish_model(args)
 
 if __name__ == "__main__":
     main()
