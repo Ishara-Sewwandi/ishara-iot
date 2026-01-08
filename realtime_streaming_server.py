@@ -75,10 +75,13 @@ class RealtimeStreamingSystem:
         self.fps_start_time = time.time()
         self.current_fps = 0
         
-        # Stream settings
-        self.stream_quality = 80  # JPEG quality (1-100)
+        # Stream settings - Optimized for better FPS
+        self.stream_quality = 75  # JPEG quality (1-100) - balanced quality/speed
         self.stream_width = 640   # Reduced for network efficiency
         self.stream_height = 360
+        
+        # Frame timing
+        self.last_frame_time = 0
         
         logger.info("System initialized successfully")
     
@@ -119,7 +122,7 @@ class RealtimeStreamingSystem:
     def _detection_loop(self):
         """Background detection loop - runs both models simultaneously"""
         frame_skip = 0
-        skip_interval = 2  # Process every 2nd frame for speed
+        skip_interval = 3  # Process every 3rd frame for better FPS (increased from 2)
         
         while self.running:
             try:
@@ -194,9 +197,16 @@ class RealtimeStreamingSystem:
                 # Resize frame for network efficiency
                 frame_resized = cv2.resize(frame, (self.stream_width, self.stream_height))
                 
-                # Encode frame as JPEG
-                ret, buffer = cv2.imencode('.jpg', frame_resized, 
-                                          [cv2.IMWRITE_JPEG_QUALITY, self.stream_quality])
+                # FIX COLOR INVERSION: Convert BGR to RGB before encoding
+                frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
+                
+                # Encode frame as JPEG with optimization
+                jpeg_params = [
+                    cv2.IMWRITE_JPEG_QUALITY, self.stream_quality,
+                    cv2.IMWRITE_JPEG_OPTIMIZE, 1,
+                    cv2.IMWRITE_JPEG_PROGRESSIVE, 1
+                ]
+                ret, buffer = cv2.imencode('.jpg', frame_rgb, jpeg_params)
                 
                 if not ret:
                     continue
@@ -216,8 +226,8 @@ class RealtimeStreamingSystem:
                 # Emit via WebSocket
                 socketio.emit('detection_update', detection_data, namespace='/')
                 
-                # Small delay to control stream rate (~15-20 FPS for network)
-                time.sleep(0.05)
+                # Delay to control stream rate (15 FPS default)
+                time.sleep(0.0667)  # 1/15 = 15 FPS
                 
             except Exception as e:
                 logger.error(f"Error in streaming loop: {e}", exc_info=True)
@@ -329,9 +339,14 @@ class RealtimeStreamingSystem:
                         time.sleep(0.01)
                         continue
                 
-                # Encode as JPEG
-                ret, buffer = cv2.imencode('.jpg', frame, 
-                                          [cv2.IMWRITE_JPEG_QUALITY, self.stream_quality])
+                # Convert BGR to RGB for correct color display
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                
+                # Encode as JPEG with optimization
+                ret, buffer = cv2.imencode('.jpg', frame_rgb, 
+                                          [cv2.IMWRITE_JPEG_QUALITY, self.stream_quality,
+                                           cv2.IMWRITE_JPEG_OPTIMIZE, 1,
+                                           cv2.IMWRITE_JPEG_PROGRESSIVE, 1])
                 
                 if not ret:
                     continue
@@ -340,7 +355,7 @@ class RealtimeStreamingSystem:
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
                 
-                time.sleep(0.033)  # ~30 FPS
+                time.sleep(0.0667)  # 15 FPS default
                 
             except Exception as e:
                 logger.error(f"Error generating JPEG stream: {e}")

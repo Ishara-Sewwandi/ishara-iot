@@ -21,11 +21,11 @@ class Config:
     
     # YOLOv8 Model Settings
     YOLO_MODEL_PATH = "models/fish_detection.pt"  # Your trained YOLOv8 model
-    CONFIDENCE_THRESHOLD = 0.5
-    IOU_THRESHOLD = 0.45
-    YOLO_IMG_SIZE = 320  # Reduced to 320 for maximum speed (fish are large objects)
+    CONFIDENCE_THRESHOLD = 0.25  # Lowered from 0.5 to detect more fish
+    IOU_THRESHOLD = 0.4  # Slightly reduced for better overlap handling
+    YOLO_IMG_SIZE = 416  # Increased from 320 for better detection accuracy
     YOLO_HALF = False  # Half precision (FP16) - only works with GPU
-    YOLO_MAX_DET = 10  # Maximum detections per image (reduce processing)
+    YOLO_MAX_DET = 20  # Increased from 10 to detect more fish
     YOLO_AGNOSTIC_NMS = True  # Faster NMS
     
     # Behavior Analysis Settings

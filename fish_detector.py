@@ -32,6 +32,37 @@ class FishDetector:
             except:
                 raise Exception("Could not load any YOLO model")
     
+    def _enhance_frame(self, frame):
+        """
+        Enhance frame for better fish detection (lightweight version)
+        - Improve contrast
+        - Slight brightness adjustment
+        
+        Args:
+            frame (numpy.ndarray): Input frame
+            
+        Returns:
+            numpy.ndarray: Enhanced frame
+        """
+        try:
+            # Convert to LAB color space for better contrast processing
+            lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
+            
+            # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to L channel
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            l = clahe.apply(l)
+            
+            # Merge channels back
+            enhanced_lab = cv2.merge([l, a, b])
+            enhanced = cv2.cvtColor(enhanced_lab, cv2.COLOR_LAB2BGR)
+            
+            return enhanced
+            
+        except Exception as e:
+            logger.warning(f"Frame enhancement failed, using original: {e}")
+            return frame
+    
     def detect(self, frame):
         """
         Detect fish in frame using YOLOv8
@@ -44,14 +75,17 @@ class FishDetector:
                   [{'bbox': [x1, y1, x2, y2], 'confidence': float, 'class': str}]
         """
         try:
+            # Enhance frame for better detection
+            enhanced_frame = self._enhance_frame(frame)
+            
             # Run inference with optimized settings for Raspberry Pi
             results = self.model(
-                frame,
+                enhanced_frame,
                 conf=self.config.CONFIDENCE_THRESHOLD,
                 iou=self.config.IOU_THRESHOLD,
-                imgsz=self.config.YOLO_IMG_SIZE,  # Use smaller image size for speed
+                imgsz=self.config.YOLO_IMG_SIZE,  # Image size for detection
                 half=self.config.YOLO_HALF,  # Half precision if GPU available
-                max_det=self.config.YOLO_MAX_DET,  # Limit detections
+                max_det=self.config.YOLO_MAX_DET,  # Maximum detections
                 agnostic_nms=self.config.YOLO_AGNOSTIC_NMS,  # Faster NMS
                 verbose=False,
                 device='cpu'  # Force CPU on Raspberry Pi
