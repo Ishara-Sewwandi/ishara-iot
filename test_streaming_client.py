@@ -89,7 +89,7 @@ def on_detection_update(data):
 
 def main():
     # Server URL (change to your Raspberry Pi IP)
-    SERVER_URL = 'http://localhost:5000'
+    SERVER_URL = 'http://192.168.8.101:5000'
     
     print("=" * 60)
     print("Real-Time Streaming Test Client")

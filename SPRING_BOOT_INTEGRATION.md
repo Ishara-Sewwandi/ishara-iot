@@ -33,12 +33,12 @@ cd /home/koi/Documents/GitHub/ishara-iot
 
 The server will display:
 ```
-Local IP: 192.168.1.100
+Local IP: 192.168.8.101
 Access Points:
-  • API Info:        http://192.168.1.100:5000
-  • Video Stream:    http://192.168.1.100:5000/video/stream
-  • Detection API:   http://192.168.1.100:5000/api/detections
-  • WebSocket:       ws://192.168.1.100:5000
+  • API Info:        http://192.168.8.101:5000
+  • Video Stream:    http://192.168.8.101:5000/video/stream
+  • Detection API:   http://192.168.8.101:5000/api/detections
+  • WebSocket:       ws://192.168.8.101:5000
 ```
 
 ### 2. Spring Boot Integration
@@ -84,7 +84,7 @@ public class FishMonitoringWebSocketClient {
     
     private static final Logger logger = Logger.getLogger(FishMonitoringWebSocketClient.class.getName());
     private Socket socket;
-    private static final String RASPBERRY_PI_URL = "http://192.168.1.100:5000"; // Change to your Pi's IP
+    private static final String RASPBERRY_PI_URL = "http://192.168.8.101:5000"; // Change to your Pi's IP
     
     @PostConstruct
     public void connect() {
@@ -258,7 +258,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Service
 public class FishMonitoringRestClient {
     
-    private static final String API_URL = "http://192.168.1.100:5000/api/detections";
+    private static final String API_URL = "http://192.168.8.101:5000/api/detections";
     private final RestTemplate restTemplate = new RestTemplate();
     
     @Scheduled(fixedRate = 1000) // Poll every 1 second
@@ -417,7 +417,7 @@ export default FishMonitoringComponent;
 - **Description**: MJPEG video stream (raw video)
 - **Usage**: Direct video tag or img tag
 ```html
-<img src="http://192.168.1.100:5000/video/stream" alt="Live Feed" />
+<img src="http://192.168.8.101:5000/video/stream" alt="Live Feed" />
 ```
 
 ### WebSocket: detection_update
@@ -440,7 +440,7 @@ export default FishMonitoringComponent;
 1. **Use WebSocket** instead of polling REST API
 2. **Adjust stream quality** in config:
 ```bash
-curl -X POST http://192.168.1.100:5000/api/config \
+curl -X POST http://192.168.8.101:5000/api/config \
   -H "Content-Type: application/json" \
   -d '{"quality": 70, "width": 640, "height": 360}'
 ```

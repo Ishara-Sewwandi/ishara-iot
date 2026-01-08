@@ -23,10 +23,10 @@
   ./start_streaming_server.sh
 
   Server will display:
-    Local IP: 192.168.1.100
-    API:       http://192.168.1.100:5000
-    WebSocket: ws://192.168.1.100:5000
-    Video:     http://192.168.1.100:5000/video/stream
+    Local IP: 192.168.8.101
+    API:       http://192.168.8.101:5000
+    WebSocket: ws://192.168.8.101:5000
+    Video:     http://192.168.8.101:5000/video/stream
 
 ┌─────────────────────────────────────────────────────────────┐
 │  🧪 TEST IT                                                  │
@@ -41,7 +41,7 @@
     python3 test_streaming_client.py
 
   Direct Video:
-    http://192.168.1.100:5000/video/stream
+    http://192.168.8.101:5000/video/stream
 
 ┌─────────────────────────────────────────────────────────────┐
 │  📡 API ENDPOINTS                                            │
@@ -59,7 +59,7 @@
 │  🔌 SPRING BOOT INTEGRATION                                  │
 └─────────────────────────────────────────────────────────────┘
 
-  Socket socket = IO.socket("http://192.168.1.100:5000");
+  Socket socket = IO.socket("http://192.168.8.101:5000");
   
   socket.on("detection_update", args -> {
       JSONObject data = (JSONObject) args[0];
@@ -129,11 +129,11 @@
 └─────────────────────────────────────────────────────────────┘
 
   Low Latency (Fast):
-    curl -X POST http://192.168.1.100:5000/api/config \
+    curl -X POST http://192.168.8.101:5000/api/config \
       -d '{"quality": 60, "width": 480, "height": 270}'
 
   High Quality (Detailed):
-    curl -X POST http://192.168.1.100:5000/api/config \
+    curl -X POST http://192.168.8.101:5000/api/config \
       -d '{"quality": 90, "width": 960, "height": 540}'
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -147,7 +147,7 @@
   High latency:
     • Use wired Ethernet
     • Reduce quality
-    • Check: ping 192.168.1.100
+    • Check: ping 192.168.8.101
 
   Models missing:
     ls -lh models/

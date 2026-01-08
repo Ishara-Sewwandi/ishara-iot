@@ -1,4 +1,4 @@
-# ✅ COMPLETE: Both Detection Models + Real-Time Streaming Systemhgjghjhgj
+# ✅ COMPLETE: Both Detection Models + Real-Time Streaming Systemhgjghjhgjimpre
 
 ## What Was Implemented
 
@@ -102,13 +102,13 @@ Output shows:
   Real-Time Streaming Server
 ========================================
 
-Local IP: 192.168.1.100
+Local IP: 192.168.8.101
 
 Access Points:
-  • API Info:        http://192.168.1.100:5000
-  • Video Stream:    http://192.168.1.100:5000/video/stream
-  • Detection API:   http://192.168.1.100:5000/api/detections
-  • WebSocket:       ws://192.168.1.100:5000
+  • API Info:        http://192.168.8.101:5000
+  • Video Stream:    http://192.168.8.101:5000/video/stream
+  • Detection API:   http://192.168.8.101:5000/api/detections
+  • WebSocket:       ws://192.168.8.101:5000
 ```
 
 ### 2. Test It
@@ -127,7 +127,7 @@ python3 test_streaming_client.py
 **Option C: Direct Video Stream**
 Open in browser:
 ```
-http://192.168.1.100:5000/video/stream
+http://192.168.8.101:5000/video/stream
 ```
 
 ### 3. Integrate with Spring Boot
@@ -136,7 +136,7 @@ See `SPRING_BOOT_INTEGRATION.md` for complete examples.
 
 Quick example:
 ```java
-Socket socket = IO.socket("http://192.168.1.100:5000");
+Socket socket = IO.socket("http://192.168.8.101:5000");
 
 socket.on("detection_update", args -> {
     JSONObject data = (JSONObject) args[0];
@@ -352,7 +352,7 @@ pip install -r requirements.txt
 curl http://localhost:5000/api/status
 
 # Check from another device
-curl http://192.168.1.100:5000/api/status
+curl http://192.168.8.101:5000/api/status
 
 # Allow firewall
 sudo ufw allow 5000/tcp
@@ -362,7 +362,7 @@ sudo ufw allow 5000/tcp
 
 1. Use wired Ethernet
 2. Reduce quality/resolution
-3. Check network ping: `ping 192.168.1.100`
+3. Check network ping: `ping 192.168.8.101`
 4. Increase frame skip interval
 
 ### Models Not Found
@@ -426,7 +426,7 @@ python3 test_streaming_client.py
 ### 4. Customize Settings
 ```bash
 # Adjust quality for your network
-curl -X POST http://192.168.1.100:5000/api/config \
+curl -X POST http://192.168.8.101:5000/api/config \
   -H "Content-Type: application/json" \
   -d '{"quality": 75, "width": 640, "height": 360}'
 ```

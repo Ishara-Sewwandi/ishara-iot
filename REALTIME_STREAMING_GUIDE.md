@@ -59,13 +59,13 @@ Features:
   Server Information
 ========================================
 
-Local IP: 192.168.1.100
+Local IP: 192.168.8.101
 
 Access Points:
-  • API Info:        http://192.168.1.100:5000
-  • Video Stream:    http://192.168.1.100:5000/video/stream
-  • Detection API:   http://192.168.1.100:5000/api/detections
-  • WebSocket:       ws://192.168.1.100:5000
+  • API Info:        http://192.168.8.101:5000
+  • Video Stream:    http://192.168.8.101:5000/video/stream
+  • Detection API:   http://192.168.8.101:5000/api/detections
+  • WebSocket:       ws://192.168.8.101:5000
 ```
 
 ### 2. Test with Web Client
@@ -74,7 +74,7 @@ Open `web_client.html` in your browser:
 
 1. Update the IP address in the file:
 ```javascript
-const SERVER_URL = 'http://192.168.1.100:5000';  // Your Raspberry Pi IP
+const SERVER_URL = 'http://192.168.8.101:5000';  // Your Raspberry Pi IP
 ```
 
 2. Open the file:
@@ -283,7 +283,7 @@ Same data structure but without the frame:
 - **Content-Type**: `multipart/x-mixed-replace; boundary=frame`
 - **Usage**:
 ```html
-<img src="http://192.168.1.100:5000/video/stream" alt="Live Feed" />
+<img src="http://192.168.8.101:5000/video/stream" alt="Live Feed" />
 ```
 
 ### POST `/api/config`
@@ -332,7 +332,7 @@ See `SPRING_BOOT_INTEGRATION.md` for:
 
 **2. Create WebSocket client:**
 ```java
-Socket socket = IO.socket("http://192.168.1.100:5000");
+Socket socket = IO.socket("http://192.168.8.101:5000");
 
 socket.on("detection_update", args -> {
     JSONObject data = (JSONObject) args[0];
@@ -409,7 +409,7 @@ curl http://localhost:5000/api/status
 
 **Check from another device:**
 ```bash
-curl http://192.168.1.100:5000/api/status
+curl http://192.168.8.101:5000/api/status
 ```
 
 **Check firewall:**
@@ -422,14 +422,14 @@ sudo ufw allow 5000/tcp
 
 **1. Reduce quality:**
 ```bash
-curl -X POST http://192.168.1.100:5000/api/config \
+curl -X POST http://192.168.8.101:5000/api/config \
   -H "Content-Type: application/json" \
   -d '{"quality": 60, "width": 480, "height": 270}'
 ```
 
 **2. Check network:**
 ```bash
-ping 192.168.1.100  # Should be <10ms on local network
+ping 192.168.8.101  # Should be <10ms on local network
 ```
 
 **3. Use wired connection** instead of WiFi
@@ -510,7 +510,7 @@ python3 test_streaming_client.py
 
 ### Access from Spring Boot
 ```java
-Socket socket = IO.socket("http://192.168.1.100:5000");
+Socket socket = IO.socket("http://192.168.8.101:5000");
 socket.connect();
 socket.emit("start_stream");
 ```
@@ -518,12 +518,12 @@ socket.emit("start_stream");
 ### View Raw Video Stream
 Open in browser or video player:
 ```
-http://192.168.1.100:5000/video/stream
+http://192.168.8.101:5000/video/stream
 ```
 
 ### Get Detection Data
 ```bash
-curl http://192.168.1.100:5000/api/detections
+curl http://192.168.8.101:5000/api/detections
 ```
 
 ## ESP32 Compatibility
