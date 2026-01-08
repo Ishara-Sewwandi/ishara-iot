@@ -1,0 +1,101 @@
+FISH HEALTH DETECTION RESULTS
+============================================================
+Test Date: 2026-01-08 02:09:26
+Images Processed: 13
+============================================================
+
+
+Image: bag.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: fun.jpg
+------------------------------------------------------------
+  Total fish detected: 1
+
+  Fish #1:
+    Position: (0, 0) to (342, 147)
+    Detection Confidence: 63.6%
+    Health Status: unhealthy
+    Health Confidence: 100.0%
+
+
+Image: fun1.jpg
+------------------------------------------------------------
+  Total fish detected: 1
+
+  Fish #1:
+    Position: (13, 43) to (172, 150)
+    Detection Confidence: 52.1%
+    Health Status: unhealthy
+    Health Confidence: 98.1%
+
+
+Image: fun3.jpg
+------------------------------------------------------------
+  Total fish detected: 1
+
+  Fish #1:
+    Position: (3, 0) to (185, 256)
+    Detection Confidence: 76.7%
+    Health Status: dead
+    Health Confidence: 86.1%
+
+
+Image: images.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: koi.jpg
+------------------------------------------------------------
+  Total fish detected: 1
+
+  Fish #1:
+    Position: (0, 0) to (181, 181)
+    Detection Confidence: 70.4%
+    Health Status: unhealthy
+    Health Confidence: 100.0%
+
+
+Image: lap2.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: lov.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: monk.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: par.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: par2.jpg
+------------------------------------------------------------
+  Total fish detected: 1
+
+  Fish #1:
+    Position: (3, 25) to (194, 205)
+    Detection Confidence: 68.3%
+    Health Status: unhealthy
+    Health Confidence: 97.8%
+
+
+Image: snak.jpg
+------------------------------------------------------------
+  No fish detected
+
+
+Image: watc.jpg
+------------------------------------------------------------
+  No fish detected
+

@@ -16,39 +16,39 @@ logger = logging.getLogger(__name__)
 class FishHealthDetector:
     """Fish health classification using YOLOv8"""
     
-    def __init__(self, config=None):
-        """Initialize fish health classifier"""
+    def __init__(self, config=None, confidence_threshold=0.65):
+        """Initialize fish health classifier
+        
+        Args:
+            config: Configuration object
+            confidence_threshold: Minimum confidence for predictions (default: 0.65)
+                                 Set higher (0.75-0.85) for more reliable detection
+                                 Set lower (0.50-0.60) for more sensitive detection
+        """
         self.config = config
         self.model = None
         self.model_available = False
+        self.confidence_threshold = confidence_threshold
         
         # Health class names (alphabetically as YOLOv8 will sort them)
+        # Simplified 3-class system: dead, healthy, unhealthy
         self.class_names = [
-            'bacterial',
-            'dead', 
-            'fungal',
+            'dead',
             'healthy',
-            'parasitic',
-            'white_tail'
+            'unhealthy'
         ]
         
         # Severity levels
         self.severity = {
             'healthy': 0,
-            'bacterial': 2,
-            'fungal': 2,
-            'parasitic': 2,
-            'white_tail': 2,
+            'unhealthy': 2,
             'dead': 3
         }
         
         # Color codes for display
         self.colors = {
             'healthy': (0, 255, 0),      # Green
-            'bacterial': (0, 165, 255),  # Orange
-            'fungal': (147, 20, 255),    # Purple
-            'parasitic': (255, 191, 0),  # Blue
-            'white_tail': (255, 255, 0), # Cyan
+            'unhealthy': (0, 165, 255),  # Orange
             'dead': (0, 0, 255)          # Red
         }
         
@@ -102,6 +102,22 @@ class FishHealthDetector:
                 else:
                     class_name = f"class_{top_class_id}"
                 
+                # Apply confidence threshold
+                if confidence < self.confidence_threshold:
+                    # Low confidence - return uncertain status
+                    return {
+                        'class': 'uncertain',
+                        'confidence': confidence,
+                        'severity': 1,
+                        'is_healthy': False,
+                        'needs_attention': False,
+                        'is_critical': False,
+                        'uncertain': True,
+                        'probable_class': class_name,  # Show what it might be
+                        'color': (128, 128, 128)  # Gray for uncertain
+                    }
+                
+                # High confidence prediction
                 return {
                     'class': class_name,
                     'confidence': confidence,
@@ -109,6 +125,7 @@ class FishHealthDetector:
                     'is_healthy': class_name == 'healthy',
                     'needs_attention': class_name != 'healthy',
                     'is_critical': class_name == 'dead',
+                    'uncertain': False,
                     'color': self.colors.get(class_name, (255, 255, 255))
                 }
             
@@ -149,7 +166,7 @@ def test_classifier():
         print(f"❌ Dataset not found: {dataset_path}")
         return
     
-    print(f"\n📁 Testing on validation images...")
+    print(f"\n� Testing on validation images...")
     
     # Test each class
     for class_name in detector.class_names:

@@ -1,8 +1,8 @@
 task: detect
 mode: train
 model: yolov8n.pt
-data: dataset/fish_detection/images/data.yaml
-epochs: 50
+data: dataset/fish_detection/data.yaml
+epochs: 20
 time: null
 patience: 20
 batch: 8

@@ -55,7 +55,7 @@ def train_fish_health_model(args):
             total_all += total
     
     print(f"\n📦 Total dataset: {total_all} images")
-    print(f"\n6 Classes: bacterial, dead, fungal, healthy, parasitic, white_tail")
+    print(f"\n3 Classes: dead, healthy, unhealthy")
     
     # Load YOLOv8 classification model
     print(f"\n📦 Loading model: {args.model}")
@@ -76,12 +76,23 @@ def train_fish_health_model(args):
             batch=args.batch,
             device=args.device,
             workers=2,
-            patience=20,
+            patience=0,  # Disable early stopping to train full epochs
             save=True,
             plots=True,
             verbose=True,
             name='fish_health',
-            project='runs/classify'
+            project='runs/classify',
+            # Enhanced augmentation for small balanced dataset
+            hsv_h=0.015,       # Hue augmentation
+            hsv_s=0.7,         # Saturation augmentation  
+            hsv_v=0.4,         # Value augmentation
+            degrees=15,        # Rotation
+            translate=0.1,     # Translation
+            scale=0.5,         # Scaling
+            flipud=0.5,        # Vertical flip
+            fliplr=0.5,        # Horizontal flip
+            mosaic=0.0,        # Disable mosaic (not good for classification)
+            mixup=0.0          # Disable mixup
         )
         
         elapsed = time.time() - start_time

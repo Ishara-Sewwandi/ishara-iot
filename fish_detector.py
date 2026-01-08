@@ -130,3 +130,24 @@ class FishDetector:
             )
         
         return frame_copy
+
+
+if __name__ == "__main__":
+    # Test the detector
+    print("Testing Fish Detector...")
+    from config import Config
+    
+    config = Config()
+    detector = FishDetector(config)
+    
+    # Test with a sample image
+    test_img = cv2.imread("test_images/input/test.jpg")
+    if test_img is not None:
+        detections = detector.detect(test_img)
+        print(f"Detected {len(detections)} fish")
+        
+        result = detector.draw_detections(test_img, detections)
+        cv2.imwrite("test_detection_output.jpg", result)
+        print("Result saved to test_detection_output.jpg")
+    else:
+        print("No test image found at test_images/input/test.jpg")
