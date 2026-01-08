@@ -1,0 +1,199 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║     🐟 REAL-TIME FISH MONITORING - QUICK REFERENCE 🐟        ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────┐
+│  ✅ FEATURES                                                 │
+└─────────────────────────────────────────────────────────────┘
+
+  🎯 Fish Detection (YOLOv8) - Model 1
+  🏥 Health Detection (YOLOv8-cls) - Model 2
+  📹 Live Video Feed with Detection Overlays
+  ⚡ Real-Time WebSocket Streaming
+  🌐 Spring Boot Integration Ready
+  📡 ESP32 Compatible
+  🚀 Zero Lag (<100ms on local network)
+
+┌─────────────────────────────────────────────────────────────┐
+│  🚀 START SERVER                                             │
+└─────────────────────────────────────────────────────────────┘
+
+  ./start_streaming_server.sh
+
+  Server will display:
+    Local IP: 192.168.1.100
+    API:       http://192.168.1.100:5000
+    WebSocket: ws://192.168.1.100:5000
+    Video:     http://192.168.1.100:5000/video/stream
+
+┌─────────────────────────────────────────────────────────────┐
+│  🧪 TEST IT                                                  │
+└─────────────────────────────────────────────────────────────┘
+
+  Web Browser:
+    1. Edit web_client.html (update IP)
+    2. Open in browser
+    3. Click "Connect"
+
+  Python Client:
+    python3 test_streaming_client.py
+
+  Direct Video:
+    http://192.168.1.100:5000/video/stream
+
+┌─────────────────────────────────────────────────────────────┐
+│  📡 API ENDPOINTS                                            │
+└─────────────────────────────────────────────────────────────┘
+
+  GET  /                       → Service info
+  GET  /api/status             → System status
+  GET  /api/detections         → Latest detections
+  GET  /video/stream           → MJPEG video stream
+  POST /api/config             → Update settings
+  
+  WebSocket / (detection_update) → Real-time + frames
+
+┌─────────────────────────────────────────────────────────────┐
+│  🔌 SPRING BOOT INTEGRATION                                  │
+└─────────────────────────────────────────────────────────────┘
+
+  Socket socket = IO.socket("http://192.168.1.100:5000");
+  
+  socket.on("detection_update", args -> {
+      JSONObject data = (JSONObject) args[0];
+      int fishCount = data.getInt("fish_count");
+      String frame = data.getString("frame");  // base64
+      JSONArray detections = data.getJSONArray("detections");
+      
+      // Process each fish
+      for (int i = 0; i < detections.length(); i++) {
+          JSONObject fish = detections.getJSONObject(i);
+          if (fish.has("health")) {
+              JSONObject health = fish.getJSONObject("health");
+              if (health.getBoolean("is_critical")) {
+                  sendAlert(fish);  // DEAD FISH ALERT!
+              }
+          }
+      }
+  });
+  
+  socket.connect();
+  socket.emit("start_stream");
+
+┌─────────────────────────────────────────────────────────────┐
+│  📊 DATA FORMAT                                              │
+└─────────────────────────────────────────────────────────────┘
+
+  {
+    "timestamp": "2026-01-08T10:30:45",
+    "fps": 24.5,
+    "fish_count": 2,
+    "detections": [
+      {
+        "id": 1,
+        "bbox": {"x1": 120, "y1": 180, "x2": 280, "y2": 340},
+        "confidence": 0.95,
+        "health": {
+          "class": "healthy",
+          "confidence": 0.92,
+          "is_healthy": true,
+          "is_critical": false
+        }
+      },
+      {
+        "id": 2,
+        "health": {
+          "class": "dead",
+          "is_critical": true  ← ALERT!
+        }
+      }
+    ],
+    "frame": "/9j/4AAQSkZ..."  ← base64 JPEG
+  }
+
+┌─────────────────────────────────────────────────────────────┐
+│  🏥 HEALTH CLASSES                                           │
+└─────────────────────────────────────────────────────────────┘
+
+  🟢 healthy     - Normal fish
+  🟠 bacterial   - Bacterial infection
+  🟣 fungal      - Fungal infection
+  🔵 parasitic   - Parasitic infection
+  🟡 white_tail  - White tail disease
+  🔴 dead        - CRITICAL ALERT
+
+┌─────────────────────────────────────────────────────────────┐
+│  ⚙️  PERFORMANCE TUNING                                     │
+└─────────────────────────────────────────────────────────────┘
+
+  Low Latency (Fast):
+    curl -X POST http://192.168.1.100:5000/api/config \
+      -d '{"quality": 60, "width": 480, "height": 270}'
+
+  High Quality (Detailed):
+    curl -X POST http://192.168.1.100:5000/api/config \
+      -d '{"quality": 90, "width": 960, "height": 540}'
+
+┌─────────────────────────────────────────────────────────────┐
+│  🔧 TROUBLESHOOTING                                          │
+└─────────────────────────────────────────────────────────────┘
+
+  Can't connect:
+    curl http://localhost:5000/api/status
+    sudo ufw allow 5000/tcp
+
+  High latency:
+    • Use wired Ethernet
+    • Reduce quality
+    • Check: ping 192.168.1.100
+
+  Models missing:
+    ls -lh models/
+    ./train_health_model.sh
+
+┌─────────────────────────────────────────────────────────────┐
+│  📚 DOCUMENTATION                                            │
+└─────────────────────────────────────────────────────────────┘
+
+  Complete Guide:        REALTIME_STREAMING_GUIDE.md
+  Spring Boot:           SPRING_BOOT_INTEGRATION.md
+  Implementation:        IMPLEMENTATION_SUMMARY.md
+  This Card:             QUICK_REFERENCE.txt
+
+┌─────────────────────────────────────────────────────────────┐
+│  ✅ CHECKLIST                                                │
+└─────────────────────────────────────────────────────────────┘
+
+  [ ] Start server: ./start_streaming_server.sh
+  [ ] Test API: curl http://localhost:5000/api/status
+  [ ] Test WebSocket: python3 test_streaming_client.py
+  [ ] Test browser: Open web_client.html
+  [ ] Check detections appear
+  [ ] Check health labels show
+  [ ] Integrate with Spring Boot
+  [ ] Deploy to production
+
+┌─────────────────────────────────────────────────────────────┐
+│  📋 FILES CREATED                                            │
+└─────────────────────────────────────────────────────────────┘
+
+  realtime_streaming_server.py    - Main server
+  start_streaming_server.sh        - Startup script
+  test_streaming_client.py         - Python test client
+  web_client.html                  - Browser test client
+  REALTIME_STREAMING_GUIDE.md      - Complete guide
+  SPRING_BOOT_INTEGRATION.md       - Java examples
+  IMPLEMENTATION_SUMMARY.md        - Overview
+  QUICK_REFERENCE.txt              - This file
+
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║  🚀 ONE COMMAND TO RUN EVERYTHING:                           ║
+║                                                               ║
+║     ./start_streaming_server.sh                              ║
+║                                                               ║
+║  ✅ Both Models | ✅ Live Feed | ✅ Zero Lag | ✅ Ready      ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
