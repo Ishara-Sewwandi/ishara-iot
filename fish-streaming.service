@@ -1,0 +1,19 @@
+[Unit]
+Description=Fish Detection Real-Time Streaming Server
+After=network.target
+
+[Service]
+Type=simple
+User=koi
+WorkingDirectory=/home/koi/Documents/GitHub/ishara-iot
+ExecStart=/bin/bash /home/koi/Documents/GitHub/ishara-iot/start_streaming_server.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+
+[Install]
+WantedBy=multi-user.target
