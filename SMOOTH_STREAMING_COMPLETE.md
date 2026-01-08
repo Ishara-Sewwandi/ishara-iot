@@ -15,7 +15,7 @@
 
 ## 🚀 What Was Implemented
 
-### 1. Performance Optimizations
+### 1. Performance Optimizationsnn
 
 #### Camera Settings
 ```python
