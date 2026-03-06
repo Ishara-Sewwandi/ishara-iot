@@ -1,0 +1,24 @@
+[Unit]
+Description=LiveKit Fish Detection Camera Publisher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=koi
+WorkingDirectory=/home/koi/Documents/GitHub/ishara-iot
+ExecStart=/bin/bash /home/koi/Documents/GitHub/ishara-iot/start_livekit_publisher.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target
