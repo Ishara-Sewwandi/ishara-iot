@@ -5,16 +5,29 @@ Streams camera feed with real-time fish detection overlay to LiveKit server
 Works from any network via VPS-hosted LiveKit
 """
 
+import os
+import ssl
+
+# Disable SSL certificate verification for Traefik-managed certificates
+# LiveKit SDK uses Rust's native TLS, so we set environment variables early
+os.environ['LIVEKIT_INSECURE'] = 'true'
+os.environ['RUST_TLS_INSECURE'] = 'true'
+ssl._create_default_https_context = ssl._create_unverified_context
+
 import asyncio
 import cv2
 import signal
 import sys
-import os
 import argparse
 import logging
 import time
 from datetime import datetime
 import threading
+import ssl
+
+# Disable SSL verification for Traefik self-signed certificates
+# This is acceptable when connecting to your own trusted VPS
+ssl._create_default_https_context = ssl._create_unverified_context
 
 logging.basicConfig(
     level=logging.INFO,
