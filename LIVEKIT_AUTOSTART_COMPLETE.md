@@ -8,9 +8,13 @@
 - **Other Services**: None configured for auto-start
 
 ### 🔴 Current Issue
-**SSL Certificate Error**: `NotValidForName`
+**WebRTC Connection Timeout**: `wait_pc_connection timed out`
 
-The Raspberry Pi is trying to connect but **Traefik on your VPS is using a self-signed certificate** instead of Let's Encrypt.
+**Symptom**: Live feed shows black screen in dashboard
+
+**Cause**: LiveKit server on VPS needs ICE/TURN configuration for NAT traversal
+
+The Raspberry Pi **cannot establish WebRTC peer connection** to LiveKit server. WebSocket signaling works, but media connection fails.
 
 ## What Works Now
 
@@ -23,19 +27,22 @@ The Raspberry Pi is trying to connect but **Traefik on your VPS is using a self-
 
 ### On Your VPS (187.77.189.5)
 
-You need to configure **Let's Encrypt** in Traefik. See the detailed guide:
+Your **LiveKit server needs ICE/TURN configuration** for WebRTC to work.
+
+See the detailed troubleshooting guide:
 ```
-VPS_TRAEFIK_LETSENCRYPT_CONFIG.md
+LIVEKIT_TROUBLESHOOTING.md
 ```
 
-**Quick steps:**
-1. SSH to your VPS
-2. Go to `/home/koi/Documents/GitHub/koi-fish-friend`
-3. Edit `docker-compose.yml` to add Let's Encrypt configuration
-4. Restart Traefik: `docker-compose restart traefik`
-5. Wait 1-2 minutes for certificate to be issued
+**Required fixes on VPS:**
+1. Open UDP ports 50000-60000 in firewall
+2. Configure TURN server in `livekit.yaml`
+3. Set `external_ip: 187.77.189.5` in LiveKit config
+4. Restart LiveKit service
 
-Once Let's Encrypt is configured, the Raspberry Pi will connect automatically (no changes needed here).
+**The issue is NOT on Raspberry Pi** - everything here is working correctly.
+
+Once VPS LiveKit is configured, the video feed will appear automatically.
 
 ## Useful Commands
 
@@ -90,12 +97,20 @@ The service should be running automatically (but will show SSL error until VPS i
 
 ## Expected Behavior After VPS Fix
 
-Once Let's Encrypt is configured on VPS, you'll see:
+Once LiveKit server on VPS is properly configured with ICE/TURN, you'll see:
+
+**In Raspberry Pi logs:**
 ```
 ✅ Connected to LiveKit room: boat-navigation
-✅ Camera stream started
-✅ Fish detection active
+✅ Video track published (TR_xxxxxxxxxxxxx)
+🎬 Publishing to LiveKit at up to 15 FPS...
+📡 Frames: 150 | FPS: 14.8 | Detections: 3
 ```
+
+**In your dashboard:**
+- Live video feed with fish detection overlays
+- Real-time detection annotations
+- Smooth streaming from anywhere
 
 ## Architecture
 
@@ -122,13 +137,31 @@ Your Frontend/Backend
 
 ## Next Steps
 
-1. **Configure Let's Encrypt on VPS** (see `VPS_TRAEFIK_LETSENCRYPT_CONFIG.md`)
-2. **Wait for certificate to be issued** (1-2 minutes)
-3. **Connection will work automatically** - no restart needed on Pi
+1. **Fix LiveKit server on VPS** (see `LIVEKIT_TROUBLESHOOTING.md` for detailed steps)
+   - Configure ICE/TURN in `livekit.yaml`
+   - Open UDP ports 50000-60000
+   - Set external_ip to 187.77.189.5
+   - Restart LiveKit: `docker restart <livekit-container>`
+
+2. **Verify connection** - Raspberry Pi will connect automatically
+   ```bash
+   sudo journalctl -u livekit-publisher.service -f
+   ```
+
+3. **Check dashboard** - Live video feed will appear with fish detection
+
 4. **Test reboot**: `sudo reboot` to verify auto-start
+
+**Alternative (Easier)**: Use LiveKit Cloud instead of self-hosting
+- Sign up at https://cloud.livekit.io
+- Get API credentials
+- Update `.env` with cloud URL and credentials
+- No NAT/firewall issues to worry about
 
 ---
 
 **Service is running and will auto-start on boot!** 🚀
 
-Just fix the VPS certificate and streaming will work globally.
+**Live feed is black because**: VPS LiveKit server cannot establish WebRTC connection (NAT traversal issue)
+
+**Fix**: Configure ICE/TURN on VPS LiveKit server (see `LIVEKIT_TROUBLESHOOTING.md`)
