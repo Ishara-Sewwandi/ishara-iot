@@ -1,13 +1,12 @@
 [Unit]
-Description=Fish Detection (LiveKit Publisher) Service
-After=network-online.target
-Wants=network-online.target
+Description=Fish Monitoring API Server
+After=network.target
 
 [Service]
 Type=simple
 User=koi
 WorkingDirectory=/home/koi/Documents/GitHub/ishara-iot
-ExecStart=/bin/bash /home/koi/Documents/GitHub/ishara-iot/start_livekit_publisher.sh
+ExecStart=/bin/bash /home/koi/Documents/GitHub/ishara-iot/start_api_server.sh
 Restart=always
 RestartSec=10
 StandardOutput=journal

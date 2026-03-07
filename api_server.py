@@ -8,6 +8,7 @@ from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 import threading
 import time
+import os
 from datetime import datetime
 import logging
 
@@ -119,34 +120,29 @@ class FishMonitoringSystem:
 
 
 def generate_frames(camera_handler):
-    """Generator function for video streaming"""
-    while True:
-        try:
-            frame = camera_handler.get_frame_for_streaming()
-            if frame is not None:
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            else:
-                time.sleep(0.1)  # Wait if no frame available
-        except Exception as e:
-            logger.error(f"Error in frame generation: {e}")
-            time.sleep(0.1)
+    """Local MJPEG streaming has been disabled.
+
+    The system now publishes processed frames to LiveKit. Use the
+    `/api/livekit/token` endpoint to obtain a viewer token and connect
+    directly to the LiveKit server. This generator remains as a
+    placeholder to prevent accidental usage.
+    """
+    raise RuntimeError("Local MJPEG streaming disabled. Use LiveKit token endpoint.")
 
 
 @app.route('/api/camera/stream/<int:pond_id>')
 def video_feed(pond_id):
-    """Video streaming route for MJPEG"""
-    try:
-        if system is None or system.camera is None:
-            return jsonify({"error": "Camera not available"}), 503
-        
-        return Response(
-            generate_frames(system.camera),
-            mimetype='multipart/x-mixed-replace; boundary=frame'
-        )
-    except Exception as e:
-        logger.error(f"Error starting video stream: {e}")
-        return jsonify({"error": "Camera not available"}), 503
+    """
+    Local streaming endpoint removed.
+
+    Clients should use LiveKit to view the live stream. To obtain a
+    viewer token, call `/api/livekit/token`. The API will return the
+    LiveKit server URL and a JWT token the client can use to connect.
+    """
+    return jsonify({
+        "success": False,
+        "message": "Local MJPEG streaming disabled. Use LiveKit token endpoint: /api/livekit/token"
+    }), 410
 
 
 @app.route('/api/camera/snapshot/<int:pond_id>', methods=['POST'])
@@ -236,6 +232,87 @@ def health_check():
         "success": True,
         "message": "API server is running",
         "timestamp": datetime.now().isoformat()
+    })
+
+
+# ─────────────────────────────────────────
+# LiveKit Token Endpoint
+# ─────────────────────────────────────────
+LIVEKIT_URL = os.getenv("LIVEKIT_URL", "wss://livekit.koifishfriend.online")
+LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY", "APIhfro22ogg9c3")
+LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET", "5ejwe0usuxnlknv5afgtsyfvsgmukb1pedprwwqaxilc")
+LIVEKIT_ROOM = os.getenv("LIVEKIT_ROOM", "boat-navigation")
+
+
+@app.route('/api/livekit/token', methods=['GET', 'POST'])
+def get_livekit_token():
+    """
+    Generate a LiveKit viewer token for the frontend.
+    
+    Query params or JSON body:
+        identity (optional): viewer identity (default: auto-generated)
+        room (optional): room name (default: boat-navigation)
+    
+    Returns:
+        JSON with token, url, room for LiveKit connection
+    """
+    try:
+        from livekit.api import AccessToken, VideoGrants
+        import uuid
+
+        # Get parameters from request
+        if request.method == 'POST' and request.is_json:
+            data = request.get_json()
+            identity = data.get('identity', f'viewer-{uuid.uuid4().hex[:8]}')
+            room = data.get('room', LIVEKIT_ROOM)
+        else:
+            identity = request.args.get('identity', f'viewer-{uuid.uuid4().hex[:8]}')
+            room = request.args.get('room', LIVEKIT_ROOM)
+
+        # Generate viewer token (can subscribe but NOT publish)
+        token = AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+        token.with_identity(identity)
+        token.with_name(f"Viewer ({identity})")
+        token.with_grants(VideoGrants(
+            room_join=True,
+            room=room,
+            can_publish=False,
+            can_subscribe=True,
+        ))
+        jwt_token = token.to_jwt()
+
+        return jsonify({
+            "success": True,
+            "token": jwt_token,
+            "url": LIVEKIT_URL,
+            "room": room,
+            "identity": identity
+        })
+
+    except ImportError:
+        logger.error("livekit-api package not installed")
+        return jsonify({
+            "success": False,
+            "message": "LiveKit SDK not installed. Run: pip install livekit-api"
+        }), 500
+    except Exception as e:
+        logger.error(f"Error generating LiveKit token: {e}")
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+@app.route('/api/livekit/info', methods=['GET'])
+def get_livekit_info():
+    """
+    Get LiveKit connection info (no secret exposed).
+    Used by frontend to know where to connect.
+    """
+    return jsonify({
+        "success": True,
+        "url": LIVEKIT_URL,
+        "room": LIVEKIT_ROOM
     })
 
 

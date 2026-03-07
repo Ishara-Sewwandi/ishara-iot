@@ -88,5 +88,7 @@ echo ""
 echo "Starting server..."
 echo ""
 
-# Run the streaming server
-python3 realtime_streaming_server.py
+echo "Local WebSocket/MJPEG streaming is deprecated."
+echo "This installation now uses LiveKit only."
+echo "To run the LiveKit publisher, use: ./start_livekit_publisher.sh"
+exit 0

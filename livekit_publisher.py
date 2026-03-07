@@ -6,14 +6,6 @@ Works from any network via VPS-hosted LiveKit
 """
 
 import os
-import ssl
-
-# Disable SSL certificate verification for Traefik-managed certificates
-# LiveKit SDK uses Rust's native TLS, so we set environment variables early
-os.environ['LIVEKIT_INSECURE'] = 'true'
-os.environ['RUST_TLS_INSECURE'] = 'true'
-ssl._create_default_https_context = ssl._create_unverified_context
-
 import asyncio
 import cv2
 import signal
@@ -23,11 +15,6 @@ import logging
 import time
 from datetime import datetime
 import threading
-import ssl
-
-# Disable SSL verification for Traefik self-signed certificates
-# This is acceptable when connecting to your own trusted VPS
-ssl._create_default_https_context = ssl._create_unverified_context
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,7 +34,7 @@ from config import Config
 # ─────────────────────────────────────────
 LIVEKIT_URL = os.getenv(
     "LIVEKIT_URL",
-    "wss://livekit.koifish-livekit-9ae13d-187-77-189-5.traefik.me"
+    "wss://livekit.koifishfriend.online"
 )
 API_KEY = os.getenv("LIVEKIT_API_KEY", "APIhfro22ogg9c3")
 API_SECRET = os.getenv(
@@ -239,7 +226,7 @@ async def publish_with_detection(publisher: FishDetectionPublisher,
         logger.error("Check:")
         logger.error(f"  1. LiveKit server is running at {LIVEKIT_URL}")
         logger.error("  2. API key/secret are correct")
-        logger.error("  3. Network connectivity: ping 187.77.189.5")
+        logger.error("  3. Network connectivity to livekit.koifishfriend.online")
         return
     
     logger.info(f"✅ Connected to LiveKit room: {ROOM_NAME}")
