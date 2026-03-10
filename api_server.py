@@ -238,82 +238,49 @@ def health_check():
 # ─────────────────────────────────────────
 # LiveKit Token Endpoint
 # ─────────────────────────────────────────
-LIVEKIT_URL = os.getenv("LIVEKIT_URL", "wss://livekit.koifishfriend.online")
-LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY", "APIhfro22ogg9c3")
-LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET", "5ejwe0usuxnlknv5afgtsyfvsgmukb1pedprwwqaxilc")
-LIVEKIT_ROOM = os.getenv("LIVEKIT_ROOM", "boat-navigation")
+# MediaMTX Stream Info Endpoints
+# ─────────────────────────────────────────
+RTMP_URL = os.getenv("RTMP_URL", "rtmp://187.77.189.5:1935/live/camera")
+HLS_URL = os.getenv("HLS_URL", "https://mediamtx.koifishfriend.online/live/camera/index.m3u8")
 
 
-@app.route('/api/livekit/token', methods=['GET', 'POST'])
-def get_livekit_token():
+@app.route('/api/stream/info', methods=['GET'])
+def get_stream_info():
     """
-    Generate a LiveKit viewer token for the frontend.
-    
-    Query params or JSON body:
-        identity (optional): viewer identity (default: auto-generated)
-        room (optional): room name (default: boat-navigation)
-    
-    Returns:
-        JSON with token, url, room for LiveKit connection
-    """
-    try:
-        from livekit.api import AccessToken, VideoGrants
-        import uuid
-
-        # Get parameters from request
-        if request.method == 'POST' and request.is_json:
-            data = request.get_json()
-            identity = data.get('identity', f'viewer-{uuid.uuid4().hex[:8]}')
-            room = data.get('room', LIVEKIT_ROOM)
-        else:
-            identity = request.args.get('identity', f'viewer-{uuid.uuid4().hex[:8]}')
-            room = request.args.get('room', LIVEKIT_ROOM)
-
-        # Generate viewer token (can subscribe but NOT publish)
-        token = AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-        token.with_identity(identity)
-        token.with_name(f"Viewer ({identity})")
-        token.with_grants(VideoGrants(
-            room_join=True,
-            room=room,
-            can_publish=False,
-            can_subscribe=True,
-        ))
-        jwt_token = token.to_jwt()
-
-        return jsonify({
-            "success": True,
-            "token": jwt_token,
-            "url": LIVEKIT_URL,
-            "room": room,
-            "identity": identity
-        })
-
-    except ImportError:
-        logger.error("livekit-api package not installed")
-        return jsonify({
-            "success": False,
-            "message": "LiveKit SDK not installed. Run: pip install livekit-api"
-        }), 500
-    except Exception as e:
-        logger.error(f"Error generating LiveKit token: {e}")
-        return jsonify({
-            "success": False,
-            "message": str(e)
-        }), 500
-
-
-@app.route('/api/livekit/info', methods=['GET'])
-def get_livekit_info():
-    """
-    Get LiveKit connection info (no secret exposed).
-    Used by frontend to know where to connect.
+    Get live stream info for the frontend.
+    Returns HLS URL that can be played in any browser with hls.js.
     """
     return jsonify({
         "success": True,
-        "url": LIVEKIT_URL,
-        "room": LIVEKIT_ROOM
+        "hls_url": HLS_URL,
+        "rtmp_url": RTMP_URL,
+        "type": "hls",
+        "description": "Live fish detection stream via MediaMTX (HLS)"
     })
+
+
+@app.route('/api/stream/status', methods=['GET'])
+def get_stream_status():
+    """
+    Check if MediaMTX stream is active by querying the VPS API.
+    """
+    try:
+        import requests as req
+        resp = req.get("https://mediamtx.koifishfriend.online/v3/paths/list", timeout=5)
+        if resp.status_code == 200:
+            data = resp.json()
+            paths = data.get("items", [])
+            active = any(p.get("name") == "live/camera" and p.get("readyTime") for p in paths)
+            return jsonify({
+                "success": True,
+                "streaming": active,
+                "hls_url": HLS_URL if active else None,
+                "paths": paths
+            })
+        return jsonify({"success": True, "streaming": False, "hls_url": None})
+    except Exception as e:
+        logger.error(f"Error checking stream status: {e}")
+        return jsonify({"success": True, "streaming": False, "hls_url": None})
 
 
 def main():

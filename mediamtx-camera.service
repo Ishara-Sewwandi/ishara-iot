@@ -1,0 +1,18 @@
+[Unit]
+Description=Koi Fish MediaMTX Camera Streamer (YOLOv8 Detection → RTMP → HLS)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=koi
+WorkingDirectory=/home/koi/Documents/GitHub/ishara-iot
+EnvironmentFile=/home/koi/Documents/GitHub/ishara-iot/.env
+ExecStart=/home/koi/Documents/GitHub/ishara-iot/venv/bin/python3 /home/koi/Documents/GitHub/ishara-iot/mediamtx_streamer.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
