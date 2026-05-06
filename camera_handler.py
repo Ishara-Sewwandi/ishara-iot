@@ -11,6 +11,7 @@ import logging
 import threading
 import subprocess
 import sys
+import platform
 
 try:
     from picamera2 import Picamera2
@@ -62,19 +63,23 @@ class CameraHandler:
                 logger.info(f"Camera configured: {config.CAMERA_WIDTH}x{config.CAMERA_HEIGHT} @ {config.FRAME_RATE}fps")
                 print("Picamera2 initialized successfully")
             else:
-                # Fallback to Pi Camera via V4L2 or USB camera
-                logger.info("Picamera2 not available, trying Pi Camera via V4L2...")
-                
-                # Try to open Pi Camera on /dev/video0
-                self.camera = cv2.VideoCapture(0, cv2.CAP_V4L2)
+                # Fallback to USB/laptop webcam
+                is_windows = platform.system() == "Windows"
+                if is_windows:
+                    logger.info("Windows detected, using DirectShow backend...")
+                    self.camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+                    if not self.camera.isOpened():
+                        self.camera = cv2.VideoCapture(0)
+                else:
+                    logger.info("Trying Pi Camera via V4L2...")
+                    self.camera = cv2.VideoCapture(0, cv2.CAP_V4L2)
                 
                 if not self.camera.isOpened():
-                    logger.warning("Could not open /dev/video0, trying other devices...")
-                    # Try alternative video devices
-                    for device_id in [10, 11, 12]:
-                        self.camera = cv2.VideoCapture(device_id, cv2.CAP_V4L2)
+                    logger.warning("Could not open camera 0, trying other devices...")
+                    for device_id in [1, 2, 3]:
+                        self.camera = cv2.VideoCapture(device_id)
                         if self.camera.isOpened():
-                            logger.info(f"Successfully opened /dev/video{device_id}")
+                            logger.info(f"Successfully opened camera {device_id}")
                             break
                     else:
                         raise Exception("Could not open any camera device")
